@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useLearner } from '@/lib/useLearner'
 import { LIVE_STAGES, LIVE_TOPICS, STAGES } from '@/lib/config'
+import { scenes } from '@/components/scenes/registry'
 
 export default function TopicHub({ params }: { params: Promise<{ topic: string }> }) {
   const { topic: slug } = use(params)
@@ -33,7 +34,9 @@ export default function TopicHub({ params }: { params: Promise<{ topic: string }
 
       <ol className="mt-6 space-y-3">
         {STAGES.map((s, i) => {
-          const live = LIVE_STAGES.includes(s.key)
+          // explore is open wherever a simulation exists for this topic
+          const live =
+            LIVE_STAGES.includes(s.key) || (s.key === 'explore' && Boolean(scenes[slug]))
           const row = (
             <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gold text-lg font-bold text-brand-dark">

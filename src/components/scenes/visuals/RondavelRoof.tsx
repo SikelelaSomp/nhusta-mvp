@@ -14,7 +14,7 @@
  * Not marked, no scores sent anywhere. Calls onComplete() when the learner finishes.
  */
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { PointerEvent } from 'react';
 
 type Props = { onComplete?: () => void };
@@ -74,6 +74,18 @@ export default function RondavelRoof({ onComplete }: Props) {
   const [cutMsg, setCutMsg] = useState('');
   const svgRef = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
+  const [zoom, setZoom] = useState(1);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // re-centre on the roof whenever zoom changes
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2;
+    el.scrollTop = Math.max(0, el.scrollHeight * 0.34 - el.clientHeight / 2);
+  }, [zoom]);
+  const ZOOMS = [1, 1.5, 2, 2.5];
+  const zi = ZOOMS.indexOf(zoom);
 
   const hh = round === 1 ? 2 : h;
   const peakY = WALL_Y - hh * PX;
@@ -153,7 +165,7 @@ export default function RondavelRoof({ onComplete }: Props) {
   }
 
   const dusk = [0, 0.12, 0.3, 0.55][round - 1];
-  const sunY = [120, 170, 235, 330][round - 1];
+  const sunY = [110, 150, 200, 285][round - 1];
   const angleAtWall = step < 3 || round !== 1;
   const sideColor = (s: Side) => (labels[s] ? '#7ee0a1' : '#fff3d6');
 
@@ -165,10 +177,13 @@ export default function RondavelRoof({ onComplete }: Props) {
 
   return (
     <div className="mx-auto w-full max-w-3xl select-none">
+      <div className="relative">
+      <div ref={scrollRef} className="overflow-auto rounded-2xl" style={{ maxHeight: '75vh' }}>
       <svg
         ref={svgRef}
-        viewBox="0 0 800 520"
-        className="w-full rounded-xl"
+        viewBox="150 60 500 410"
+        className="block max-w-none"
+        style={{ width: `${zoom * 100}%` }}
         role="img"
         aria-label="Cutaway of a rondavel with a fire in the middle, a central pole and a thatch roof"
       >
@@ -192,9 +207,9 @@ export default function RondavelRoof({ onComplete }: Props) {
         {/* sky, sun, ground */}
         <rect width="800" height="520" fill="url(#rr-sky)" />
         <rect width="800" height="520" fill="#0a0d24" opacity={dusk} />
-        <circle cx="90" cy={sunY} r="30" fill="#ffd27a" />
+        <circle cx="185" cy={sunY} r="26" fill="#ffd27a" />
         {round === 4 &&
-          [[600, 60], [700, 110], [520, 30], [740, 40], [180, 70]].map(([x, y]) => (
+          [[560, 90], [610, 130], [480, 75], [625, 85], [250, 95]].map(([x, y]) => (
             <circle key={`${x}-${y}`} cx={x} cy={y} r="2" fill="#fff" />
           ))}
         <rect y={FLOOR_Y} width="800" height="80" fill="#3b2a1d" />
@@ -231,10 +246,10 @@ export default function RondavelRoof({ onComplete }: Props) {
         ))}
 
         {/* axes labels (her idea: pole = y, window-to-window = x) */}
-        <text x={Ax + 10} y={WALL_Y - 8} fill="#fff3d6" fontSize="13" opacity="0.85">
+        <text stroke="#140c0a" strokeWidth="4" strokeLinejoin="round" paintOrder="stroke" x={Ax + 10} y={WALL_Y - 8} fill="#fff3d6" fontSize="15" opacity="0.85">
           window
         </text>
-        <text x={Bx - 56} y={WALL_Y - 8} fill="#fff3d6" fontSize="13" opacity="0.85">
+        <text stroke="#140c0a" strokeWidth="4" strokeLinejoin="round" paintOrder="stroke" x={Bx - 56} y={WALL_Y - 8} fill="#fff3d6" fontSize="15" opacity="0.85">
           window
         </text>
 
@@ -260,41 +275,41 @@ export default function RondavelRoof({ onComplete }: Props) {
           <path d={arcB} stroke="#ffd54a" strokeWidth="3" opacity={angleAtWall ? 1 : 0.3} />
           <path d={arcC} stroke="#ffd54a" strokeWidth="3" opacity={angleAtWall ? 0.3 : 1} />
         </g>
-        <text x={Bx - 78} y={WALL_Y - 12} fill="#ffd54a" fontSize="22" fontWeight="700" opacity={angleAtWall ? 1 : 0.35}>
+        <text stroke="#140c0a" strokeWidth="4" strokeLinejoin="round" paintOrder="stroke" x={Bx - 78} y={WALL_Y - 12} fill="#ffd54a" fontSize="30" fontWeight="700" opacity={angleAtWall ? 1 : 0.35}>
           θ
         </text>
-        <text x={CX + 12} y={peakY + 46} fill="#ffd54a" fontSize="22" fontWeight="700" opacity={angleAtWall ? 0.35 : 1}>
+        <text stroke="#140c0a" strokeWidth="4" strokeLinejoin="round" paintOrder="stroke" x={CX + 12} y={peakY + 46} fill="#ffd54a" fontSize="30" fontWeight="700" opacity={angleAtWall ? 0.35 : 1}>
           φ
         </text>
 
         {/* side labels once learner gets them right */}
         {labels.pole && (
-          <text x={CX - 14} y={midPoleY} textAnchor="end" fill="#7ee0a1" fontSize="16" fontWeight="600">
+          <text stroke="#140c0a" strokeWidth="4" strokeLinejoin="round" paintOrder="stroke" x={CX - 14} y={midPoleY} textAnchor="end" fill="#7ee0a1" fontSize="21" fontWeight="600">
             {labels.pole}
           </text>
         )}
         {labels.floor && (
-          <text x={CX + 100} y={WALL_Y + 22} textAnchor="middle" fill="#7ee0a1" fontSize="16" fontWeight="600">
+          <text stroke="#140c0a" strokeWidth="4" strokeLinejoin="round" paintOrder="stroke" x={CX + 100} y={WALL_Y + 22} textAnchor="middle" fill="#7ee0a1" fontSize="21" fontWeight="600">
             {labels.floor}
           </text>
         )}
         {labels.rafter && (
-          <text x={(CX + Bx) / 2 + 14} y={(WALL_Y + peakY) / 2 - 10} fill="#7ee0a1" fontSize="16" fontWeight="600">
+          <text stroke="#140c0a" strokeWidth="4" strokeLinejoin="round" paintOrder="stroke" x={(CX + Bx) / 2 + 14} y={(WALL_Y + peakY) / 2 - 10} fill="#7ee0a1" fontSize="21" fontWeight="600">
             {labels.rafter}
           </text>
         )}
 
         {/* measurements */}
-        <text x={CX + 100} y={WALL_Y + 44} textAnchor="middle" fill="#fff3d6" fontSize="15">
+        <text stroke="#140c0a" strokeWidth="4" strokeLinejoin="round" paintOrder="stroke" x={CX + 100} y={WALL_Y + 44} textAnchor="middle" fill="#fff3d6" fontSize="19">
           {R} m
         </text>
         {round !== 3 && round !== 4 && (
-          <text x={CX + 12} y={midPoleY + 5} fill="#fff3d6" fontSize="15">
+          <text stroke="#140c0a" strokeWidth="4" strokeLinejoin="round" paintOrder="stroke" x={CX + 12} y={midPoleY + 5} fill="#fff3d6" fontSize="19">
             {hh.toFixed(2).replace(/\.?0+$/, '')} m
           </text>
         )}
         {round >= 3 && (
-          <text x={CX + 12} y={midPoleY + 5} fill="#ff8a6b" fontSize="18" fontWeight="700">
+          <text stroke="#140c0a" strokeWidth="4" strokeLinejoin="round" paintOrder="stroke" x={CX + 12} y={midPoleY + 5} fill="#ff8a6b" fontSize="24" fontWeight="700">
             ?
           </text>
         )}
@@ -329,9 +344,29 @@ export default function RondavelRoof({ onComplete }: Props) {
           </g>
         )}
       </svg>
+      </div>
+      <div className="absolute right-2 top-2 flex gap-1">
+        <button
+          aria-label="Zoom out"
+          disabled={zi <= 0}
+          onClick={() => setZoom(ZOOMS[Math.max(0, zi - 1)])}
+          className="h-11 w-11 rounded-full bg-slate-900/80 text-2xl font-bold text-white disabled:opacity-30"
+        >
+          −
+        </button>
+        <button
+          aria-label="Zoom in"
+          disabled={zi >= ZOOMS.length - 1}
+          onClick={() => setZoom(ZOOMS[Math.min(ZOOMS.length - 1, zi + 1)])}
+          className="h-11 w-11 rounded-full bg-slate-900/80 text-2xl font-bold text-white disabled:opacity-30"
+        >
+          +
+        </button>
+      </div>
+      </div>
 
       {/* ---------------- panel ---------------- */}
-      <div className="mt-4 rounded-xl bg-slate-900 p-4 text-slate-100">
+      <div className="mt-4 rounded-2xl bg-slate-900 p-5 text-lg text-slate-100">
         {round === 1 && (
           <>
             {step === 0 && (
@@ -341,15 +376,15 @@ export default function RondavelRoof({ onComplete }: Props) {
               </p>
             )}
             {step < PROMPTS.length ? (
-              <p className="text-lg font-medium">{PROMPTS[step].intro}</p>
+              <p className="text-xl font-semibold">{PROMPTS[step].intro}</p>
             ) : (
               <>
-                <p className="text-lg font-medium">Look at that: the labels swapped.</p>
+                <p className="text-xl font-semibold">Look at that: the labels swapped.</p>
                 <p className="mt-1 text-slate-300">
                   Opposite and adjacent depend on which angle you stand at. The hypotenuse stays the same.
                 </p>
                 <button
-                  className="mt-3 rounded-lg bg-amber-400 px-4 py-2 font-semibold text-slate-900"
+                  className="mt-3 rounded-lg bg-amber-400 px-5 py-3 text-lg font-semibold text-slate-900"
                   onClick={() => {
                     setH(1);
                     setRound(2);
@@ -365,7 +400,7 @@ export default function RondavelRoof({ onComplete }: Props) {
 
         {round === 2 && (
           <>
-            <p className="text-lg font-medium">Drag the top of the pole to set the roof pitch.</p>
+            <p className="text-xl font-semibold">Drag the top of the pole to set the roof pitch.</p>
             <p className="mt-1 text-slate-300">
               Aim for between {ZONE_MIN}° and {ZONE_MAX}°: steep enough for rain to run off, flat enough that the
               thatch still reaches.
@@ -409,7 +444,7 @@ export default function RondavelRoof({ onComplete }: Props) {
             </p>
             <button
               disabled={!inZone}
-              className="mt-3 rounded-lg bg-amber-400 px-4 py-2 font-semibold text-slate-900 disabled:opacity-40"
+              className="mt-3 rounded-lg bg-amber-400 px-5 py-3 text-lg font-semibold text-slate-900 disabled:opacity-40"
               onClick={() => setRound(3)}
             >
               Lock the roof
@@ -419,7 +454,7 @@ export default function RondavelRoof({ onComplete }: Props) {
 
         {round === 3 && (
           <>
-            <p className="text-lg font-medium">Sunset is close. Time to cut the rafter.</p>
+            <p className="text-xl font-semibold">Sunset is close. Time to cut the rafter.</p>
             <p className="mt-1 text-slate-300">
               The storm took the top of the pole, so you can&apos;t measure its height. You do know the roof pitch,
               θ = <b>{deg.toFixed(1)}°</b>, and the distance from the pole to the wall, <b>{R} m</b>. Which ratio
@@ -428,7 +463,7 @@ export default function RondavelRoof({ onComplete }: Props) {
             {!ratio && (
               <div className="mt-3 flex gap-2">
                 {(['sin', 'cos', 'tan'] as Ratio[]).map((r) => (
-                  <button key={r} className="rounded-lg bg-slate-700 px-4 py-2 font-semibold" onClick={() => pickRatio(r)}>
+                  <button key={r} className="rounded-lg bg-slate-700 px-5 py-3 text-lg font-semibold" onClick={() => pickRatio(r)}>
                     {r} θ
                   </button>
                 ))}
@@ -452,7 +487,7 @@ export default function RondavelRoof({ onComplete }: Props) {
                 />
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-lg font-semibold">{cut.toFixed(2)} m</span>
-                  <button className="rounded-lg bg-amber-400 px-4 py-2 font-semibold text-slate-900" onClick={doCut}>
+                  <button className="rounded-lg bg-amber-400 px-5 py-3 text-lg font-semibold text-slate-900" onClick={doCut}>
                     Cut and fit
                   </button>
                 </div>
@@ -464,16 +499,16 @@ export default function RondavelRoof({ onComplete }: Props) {
 
         {round === 4 && (
           <>
-            <p className="text-lg font-medium">The rafter fits. Gogo is warm tonight.</p>
+            <p className="text-xl font-semibold">The rafter fits. Gogo is warm tonight.</p>
             <p className="mt-1 text-slate-300">
               Rafter ≈ {rafter.toFixed(2)} m. You used two ratios on one triangle: tan θ = opposite ÷ adjacent to set
               the pitch, and cos θ = adjacent ÷ hypotenuse to find the length.
             </p>
             <div className="mt-3 flex gap-2">
-              <button className="rounded-lg bg-amber-400 px-4 py-2 font-semibold text-slate-900" onClick={() => onComplete?.()}>
+              <button className="rounded-lg bg-amber-400 px-5 py-3 text-lg font-semibold text-slate-900" onClick={() => onComplete?.()}>
                 Continue
               </button>
-              <button className="rounded-lg bg-slate-700 px-4 py-2 font-semibold" onClick={reset}>
+              <button className="rounded-lg bg-slate-700 px-5 py-3 text-lg font-semibold" onClick={reset}>
                 Play again
               </button>
             </div>
