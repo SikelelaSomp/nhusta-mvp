@@ -7,12 +7,14 @@ import { useLearner } from '@/lib/useLearner'
 import { LIVE_TOPICS } from '@/lib/config'
 import MathText from '@/components/MathText'
 import NonoPanel from '@/components/NonoPanel'
+import Diagram, { type Figure } from '@/components/Diagram'
 
 type Q = {
   id: string
   position: number
   prompt_md: string
   kind: string
+  figure: Figure | null
   card: { position: number; title: string } | null
 }
 type State = 'idle' | 'checking' | 'correct' | 'wrong' | 'error'
@@ -40,7 +42,7 @@ export default function Practise({ params }: { params: Promise<{ topic: string }
     if (!LIVE_TOPICS.includes(slug)) return router.replace('/home')
     createClient()
       .from('questions')
-      .select('id,position,prompt_md,kind,card:cards(position,title),topics!inner(slug)')
+      .select('id,position,prompt_md,kind,figure,card:cards(position,title),topics!inner(slug)')
       .eq('topics.slug', slug)
       .then(({ data, error }) => {
         if (error) return setLoadError('Could not load the questions.')
@@ -127,6 +129,11 @@ export default function Practise({ params }: { params: Promise<{ topic: string }
         <div className="mt-2 text-lg">
           <MathText>{q.prompt_md}</MathText>
         </div>
+        {q.figure && (
+          <div className="mt-3">
+            <Diagram figure={q.figure} />
+          </div>
+        )}
 
         <form onSubmit={e => { e.preventDefault(); check() }} className="mt-4">
           <input

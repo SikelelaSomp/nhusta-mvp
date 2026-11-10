@@ -14,6 +14,7 @@ type PlaneFig = {
   drops?: number[] // dashed lines from a point to both axes
   rightAngle?: { x: number; y: number; dx: number; dy: number }
   angle?: { to: number; label?: string } // from the positive x-axis to a point
+  vertexAngle?: { at: number; a: number; b: number; label?: string } // angle at a point, between lines to two others
 }
 
 type TriangleFig = {
@@ -123,6 +124,47 @@ function Plane({ f }: { f: PlaneFig }) {
     )
   }
 
+  let vArc: React.ReactNode = null
+  if (f.vertexAngle) {
+    const { at, a, b, label } = f.vertexAngle
+    const P = pts[at]
+    const A = pts[a]
+    const B = pts[b]
+    if (P && A && B) {
+      const px = X(P.x)
+      const py = Y(P.y)
+      const a1 = Math.atan2(Y(A.y) - py, X(A.x) - px)
+      const a2 = Math.atan2(Y(B.y) - py, X(B.x) - px)
+      let d = a2 - a1
+      while (d > Math.PI) d -= 2 * Math.PI
+      while (d < -Math.PI) d += 2 * Math.PI
+      const r = 24
+      const mid = a1 + d / 2
+      vArc = (
+        <g>
+          <path
+            d={`M ${px + r * Math.cos(a1)} ${py + r * Math.sin(a1)} A ${r} ${r} 0 0 ${d > 0 ? 1 : 0} ${px + r * Math.cos(a2)} ${py + r * Math.sin(a2)}`}
+            fill="none"
+            stroke={ACCENT}
+            strokeWidth="2"
+          />
+          {label && (
+            <text
+              x={px + (r + 12) * Math.cos(mid)}
+              y={py + (r + 12) * Math.sin(mid) + 5}
+              fontSize="15"
+              fontWeight="700"
+              fill={ACCENT}
+              textAnchor="middle"
+            >
+              {label}
+            </text>
+          )}
+        </g>
+      )
+    }
+  }
+
   const ra = f.rightAngle
   const e = 10
 
@@ -200,6 +242,7 @@ function Plane({ f }: { f: PlaneFig }) {
         />
       )}
       {arc}
+      {vArc}
 
       {pts.map((p, n) => {
         const o = OFFSET[p.pos ?? 'r']
