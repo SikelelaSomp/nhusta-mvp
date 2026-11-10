@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useLearner } from '@/lib/useLearner'
 import { LIVE_TOPICS } from '@/lib/config'
 import MathText from '@/components/MathText'
+import NonoPanel from '@/components/NonoPanel'
 
 type Q = {
   id: string
@@ -170,6 +171,8 @@ export default function Practise({ params }: { params: Promise<{ topic: string }
             </button>
           )}
         </form>
+
+        {!locked && <NonoPanel key={q.id} questionId={q.id} lastAnswer={wrongHere ? answer : ''} />}
 
         {locked && (
           <button

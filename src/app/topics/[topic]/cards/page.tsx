@@ -6,8 +6,9 @@ import { createClient } from '@/lib/supabase/client'
 import { useLearner } from '@/lib/useLearner'
 import { LIVE_TOPICS } from '@/lib/config'
 import MathText from '@/components/MathText'
+import Diagram, { type Figure } from '@/components/Diagram'
 
-type Card = { id: string; position: number; title: string; body_md: string | null }
+type Card = { id: string; position: number; title: string; body_md: string | null; figure: Figure | null }
 
 export default function CueCards({ params }: { params: Promise<{ topic: string }> }) {
   const { topic: slug } = use(params)
@@ -22,7 +23,7 @@ export default function CueCards({ params }: { params: Promise<{ topic: string }
     if (!LIVE_TOPICS.includes(slug)) return router.replace('/home')
     createClient()
       .from('cards')
-      .select('id,position,title,body_md,topics!inner(slug)')
+      .select('id,position,title,body_md,figure,topics!inner(slug)')
       .eq('topics.slug', slug)
       .order('position')
       .then(({ data, error }) => {
@@ -53,6 +54,9 @@ export default function CueCards({ params }: { params: Promise<{ topic: string }
 
       <article className="mt-3 flex-1 rounded-2xl bg-white p-5 shadow">
         <h1 className="text-xl font-bold text-brand">{card.title}</h1>
+        <div className="mt-4">
+          <Diagram figure={card.figure} />
+        </div>
         <div className="mt-4 text-[15px]">
           <MathText>{card.body_md ?? ''}</MathText>
         </div>
@@ -67,10 +71,7 @@ export default function CueCards({ params }: { params: Promise<{ topic: string }
           Back
         </button>
         {last ? (
-          <Link
-            href={`/topics/${slug}`}
-            className="flex-1 rounded-full bg-gold py-3 text-center font-bold text-brand-dark"
-          >
+          <Link href={`/topics/${slug}`} className="flex-1 rounded-full bg-gold py-3 text-center font-bold text-brand-dark">
             Done
           </Link>
         ) : (
