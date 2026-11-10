@@ -14,3 +14,9 @@ body {
   color: #1f2a24;
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
+
+/* katex: let long display equations scroll sideways instead of breaking the page */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+}

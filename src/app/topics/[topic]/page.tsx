@@ -41,11 +41,19 @@ export default function TopicHub({ params }: { params: Promise<{ topic: string }
               <div className="text-lg font-bold">{s.label}</div>
               <div className="text-sm text-gray-600">{s.desc}</div>
             </div>
-            {/* stage links switch on in steps 3 to 6 */}
+            {/* stage links switch on in steps 4 to 6 */}
             <span className="text-xs font-semibold text-gray-400">soon</span>
           </li>
         ))}
       </ol>
+
+      <Link
+        href={`/topics/${slug}/cards`}
+        className="mt-6 block rounded-2xl bg-brand p-5 text-cream shadow"
+      >
+        <div className="text-lg font-bold">Cue cards</div>
+        <div className="text-sm opacity-90">Read the worked examples any time</div>
+      </Link>
     </main>
   )
 }
