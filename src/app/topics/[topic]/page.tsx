@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useLearner } from '@/lib/useLearner'
-import { LIVE_TOPICS, STAGES } from '@/lib/config'
+import { LIVE_STAGES, LIVE_TOPICS, STAGES } from '@/lib/config'
 
 export default function TopicHub({ params }: { params: Promise<{ topic: string }> }) {
   const { topic: slug } = use(params)
@@ -32,19 +32,26 @@ export default function TopicHub({ params }: { params: Promise<{ topic: string }
       <p className="mt-1 text-gray-600">Four stages. Take them in order.</p>
 
       <ol className="mt-6 space-y-3">
-        {STAGES.map((s, i) => (
-          <li key={s.key} className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gold text-lg font-bold text-brand-dark">
-              {i + 1}
-            </span>
-            <div className="flex-1">
-              <div className="text-lg font-bold">{s.label}</div>
-              <div className="text-sm text-gray-600">{s.desc}</div>
+        {STAGES.map((s, i) => {
+          const live = LIVE_STAGES.includes(s.key)
+          const row = (
+            <div className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gold text-lg font-bold text-brand-dark">
+                {i + 1}
+              </span>
+              <div className="flex-1">
+                <div className="text-lg font-bold">{s.label}</div>
+                <div className="text-sm text-gray-600">{s.desc}</div>
+              </div>
+              <span className={`text-xs font-semibold ${live ? 'text-brand' : 'text-gray-400'}`}>
+                {live ? 'open' : 'soon'}
+              </span>
             </div>
-            {/* stage links switch on in steps 4 to 6 */}
-            <span className="text-xs font-semibold text-gray-400">soon</span>
-          </li>
-        ))}
+          )
+          return (
+            <li key={s.key}>{live ? <Link href={`/topics/${slug}/${s.key}`}>{row}</Link> : row}</li>
+          )
+        })}
       </ol>
 
       <Link

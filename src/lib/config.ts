@@ -1,6 +1,9 @@
 // topics that are open to learners right now. add 'algebra' when it passes its gates.
 export const LIVE_TOPICS = ['trigonometry']
 
+// stages that are built. switch each on as its step passes.
+export const LIVE_STAGES = ['practise']
+
 export const STAGES = [
   { key: 'watch', label: 'Watch', desc: 'a short animation' },
   { key: 'explore', label: 'Explore', desc: 'see the maths in real life' },
