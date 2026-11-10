@@ -1,38 +1,19 @@
-'use client'
-import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
 
-type Topic = { slug: string; title: string; depth: string }
-
-// step 1 smoke test (replaced by the welcome page in step 2)
-export default function Home() {
-  const [topics, setTopics] = useState<Topic[]>([])
-  const [cards, setCards] = useState<number | null>(null)
-  const [status, setStatus] = useState('starting...')
-
-  useEffect(() => {
-    const supabase = createClient()
-    ;(async () => {
-      const { data: s } = await supabase.auth.getSession()
-      if (!s.session) {
-        const { error } = await supabase.auth.signInAnonymously()
-        if (error) return setStatus('sign in failed: ' + error.message)
-      }
-      const t = await supabase.from('topics').select('slug,title,depth').order('position')
-      if (t.error) return setStatus('topics failed: ' + t.error.message)
-      setTopics(t.data as Topic[])
-      const c = await supabase.from('cards').select('id', { count: 'exact', head: true })
-      setCards(c.count)
-      setStatus('ok')
-    })()
-  }, [])
-
+export default function Welcome() {
   return (
-    <main style={{ padding: 24, fontFamily: 'sans-serif' }}>
-      <h1>NHUSTA</h1>
-      <p>status: {status}</p>
-      <ul>{topics.map(t => <li key={t.slug}>{t.title} ({t.depth})</li>)}</ul>
-      <p>cards visible: {cards ?? '-'}</p>
+    <main className="min-h-screen bg-brand text-cream flex flex-col items-center justify-center px-6 text-center">
+      <h1 className="text-5xl font-extrabold tracking-wide">NHUSTA</h1>
+      <p className="mt-2 text-lg opacity-90">Human-centred learning through mathematics</p>
+      <p className="mt-8 max-w-sm opacity-90">
+        Grade 10 maths, learned through real life. Meet Nono, who will help you think it through.
+      </p>
+      <Link
+        href="/login"
+        className="mt-10 rounded-full bg-gold px-10 py-4 text-lg font-bold text-brand-dark shadow"
+      >
+        Start
+      </Link>
     </main>
   )
 }

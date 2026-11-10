@@ -1,4 +1,9 @@
-export const metadata = { title: 'NHUSTA', description: 'Human-centred learning through mathematics' }
+import './globals.css'
+
+export const metadata = {
+  title: 'NHUSTA',
+  description: 'Human-centred learning through mathematics',
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

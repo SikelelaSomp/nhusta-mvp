@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+/* placeholder colours taken from the cue cards: swap for the official NHUSTA hexes */
+@theme {
+  --color-brand: #0f5b4a;
+  --color-brand-dark: #0a3f33;
+  --color-cream: #f6ecd6;
+  --color-accent: #e07a2a;
+  --color-gold: #f2b632;
+}
+
+body {
+  background: var(--color-cream);
+  color: #1f2a24;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
