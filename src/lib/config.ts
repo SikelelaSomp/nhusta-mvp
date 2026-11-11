@@ -2,7 +2,7 @@
 export const LIVE_TOPICS = ['trigonometry']
 
 // stages that are built. switch each on as its step passes.
-export const LIVE_STAGES = ['practise']
+export const LIVE_STAGES = ['practise', 'watch']
 
 export const STAGES = [
   { key: 'watch', label: 'Watch', desc: 'a short animation' },

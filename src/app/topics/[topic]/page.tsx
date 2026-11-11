@@ -21,16 +21,21 @@ export default function TopicHub({ params }: { params: Promise<{ topic: string }
   const router = useRouter()
   const learner = useLearner()
   const [title, setTitle] = useState('')
+  const [hasVideo, setHasVideo] = useState(false)
 
   useEffect(() => {
     if (!learner) return
     if (!LIVE_TOPICS.includes(slug)) return router.replace('/home')
     createClient()
       .from('topics')
-      .select('title')
+      .select('title, watch_video_url')
       .eq('slug', slug)
       .maybeSingle()
-      .then(({ data }) => (data ? setTitle(data.title) : router.replace('/home')))
+      .then(({ data }) => {
+        if (!data) return router.replace('/home')
+        setTitle(data.title)
+        setHasVideo(Boolean(data.watch_video_url))
+      })
   }, [learner, slug, router])
 
   if (!learner || !title) return <main className="nh-pattern min-h-screen p-6">Loading...</main>
@@ -44,9 +49,11 @@ export default function TopicHub({ params }: { params: Promise<{ topic: string }
 
         <ol className="mt-6 space-y-3">
           {STAGES.map((s, i) => {
-            // explore is open wherever a simulation exists for this topic
+            // explore opens when a simulation exists, watch opens when the topic has a video
             const live =
-              LIVE_STAGES.includes(s.key) || (s.key === 'explore' && Boolean(scenes[slug]))
+              LIVE_STAGES.includes(s.key) ||
+              (s.key === 'explore' && Boolean(scenes[slug])) ||
+              (s.key === 'watch' && hasVideo)
             const c = STAGE_COLOURS[i % STAGE_COLOURS.length]
             const row = (
               <div
