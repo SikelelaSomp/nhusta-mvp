@@ -36,7 +36,7 @@ export default function Home() {
               className={`rounded-2xl p-5 shadow ${live ? 'bg-brand text-cream' : 'bg-white text-gray-400'}`}
             >
               <div className="text-xl font-bold">{t.title}</div>
-              <div className="mt-1 text-sm">{live ? 'Open' : 'Coming soon'}</div>
+              <div className="mt-1 text-sm">{live ? 'Open' : }</div>
             </div>
           )
           return (
