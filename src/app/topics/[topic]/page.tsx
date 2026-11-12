@@ -52,6 +52,7 @@ export default function TopicHub({ params }: { params: Promise<{ topic: string }
             // explore opens when a simulation exists, watch opens when the topic has a video
             const live =
               LIVE_STAGES.includes(s.key) ||
+              s.key === 'homework' ||
               (s.key === 'explore' && Boolean(scenes[slug])) ||
               (s.key === 'watch' && hasVideo)
             const c = STAGE_COLOURS[i % STAGE_COLOURS.length]
