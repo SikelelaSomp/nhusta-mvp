@@ -14,6 +14,12 @@ export default function Welcome() {
       >
         Start
       </Link>
+      <Link
+        href="/teacher"
+        className="mt-6 rounded-full border-2 border-cream/60 px-6 py-2 text-sm font-bold text-cream"
+      >
+        I&apos;m a teacher
+      </Link>
     </main>
   )
 }

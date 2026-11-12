@@ -46,6 +46,7 @@ export default function TeacherHome() {
 
   return (
     <main className="mx-auto min-h-screen max-w-md px-5 py-8">
+        <Link href="/" className="text-sm font-semibold text-brand">&larr; Back to NHUSTA</Link>
       <h1 className="text-3xl font-bold text-brand">Teacher</h1>
       <p className="mt-1 text-gray-600">Create a class, give learners the code, assign homework, see results.</p>
 
